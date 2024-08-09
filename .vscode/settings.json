@@ -1,0 +1,9 @@
+{
+    "workbench.startupEditor": "none",
+    "gitpod.showReleaseNotes": false,
+    "workbench.editorAssociations": 
+        {
+            "README.md": "vscode.markdown.preview.editor",
+        }
+  }
+  
