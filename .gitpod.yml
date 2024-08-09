@@ -1,0 +1,7 @@
+tasks:
+  - name: Display Help
+    command: |
+      gp preview https://github.com/bomctl/bomctl/blob/main/README.md
+      brew tap bomctl/bomctl && brew install bomctl
+
+      bomctl
