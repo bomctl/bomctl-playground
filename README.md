@@ -46,9 +46,13 @@ bomctl has two commands for adding SBOMs to the cache
 Add SBOMs to cache:
 
 ``` bash
-bomctl fetch https://raw.githubusercontent.com/bomctl/bomctl-playground/linking/examples/bomctl-container-image/bomctl_bomctl_v0.3.0.cdx.json
-bomctl fetch examples/bomctl-container-image/app/bomctl_0.3.0_linux_amd64.tar.gz.spdx.json
+bomctl fetch https://raw.githubusercontent.com/bomctl/bomctl-playground/main/examples/bomctl-container-image/bomctl_bomctl_v0.3.0.cdx.json
 ```
+
+You will notice two important `bomctl` objectives in the command above. 
+
+1. `bomctl` is designed to handle collections or sets of SBOM documents. While only one url is listed in the coomand a second SBOM document. This happens because `bomctl` will recursively fetch any SBOMs that are external references of components. We believe this is a foundational concept for representing systems. 
+1. `bomctl` supports multiple SBOM formats. The first SBOM fetched is a cyclonedx 1.5 SBOM Document, the second externally referenced SBOM is an SPDX 2.3 SBOM Document.
 
 #### __Step 2__
 
