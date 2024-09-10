@@ -188,8 +188,6 @@ bomctl list
 Let's export the merged SBOM so we can see the before and after:  
 Replace the `<UUID>` with the uuid copied in the previous step.
 
-__Note:__ If you gave it a name in the previous step, use that instead of the UUID provided below.
-
 ``` bash
 bomctl export <UUID> -f spdx -o merged-sbom.spdx.json
 ```
