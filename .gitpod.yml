@@ -1,4 +1,8 @@
 tasks:
+  - name: Install Tools
+    command: |
+      brew tap anchore/grype
+      brew install grype trivy
   - name: Display Help
     command: |
       gp open README.md
