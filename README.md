@@ -173,7 +173,7 @@ To give the merged SBOM a specific name, add a `--name` or `-n` flag; otherwise 
 Once you're ready to merge:
 
 ```bash
-bomctl merge urn:uuid:f360ad8b-dc41-4256-afed-337a04dff5db urn:uuid:3de02d44-f9c6-4a94-bf48-eb92730dc3b5
+bomctl merge urn:uuid:0cd5c64f-318a-40cd-a2a9-a93301beff5d urn:uuid:3de02d44-f9c6-4a94-bf48-eb92730dc3b5
 ```
 
 __Important:__ Look for the last line in the output, for a line that start with `INFO  merge: Adding merged document sbomID=`.  
