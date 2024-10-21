@@ -1,3 +1,10 @@
+ports:
+  - name: Zot registry
+    description: Test OCI registry
+    port: 5000
+    # Do not notify once the port is detected
+    onOpen: ignore
+    visibility: public
 tasks:
   - name: Install Tools
     command: |
