@@ -144,6 +144,77 @@ Grype is a tool that can scan SBOMs for vulnerabilities and accepts them as inpu
 bomctl export urn:uuid:f360ad8b-dc41-4256-afed-337a04dff5db | grype
 ```
 
+### Deliver SBOMs to a remote OCI registry
+
+#### __Step 1: Understanding Push Flags__
+
+``` bash
+bomctl push --help
+```
+
+Similar to `export`, you have the option to specify the format and encoding of the pushed SBOM(s).
+Review flags for encoding and format [here](#step-1-understanding-export-flags)
+
+#### __Step 2: Push__
+
+Setup:
+
+Push the original SBOM to a "remote" oci registry. In this exercise, the env variable used `BOMCTL_PORT_URL` is already set in the environment, so the commands  
+can be copied/pasted as is. If you want a more interactive view, you can switch to the ports tab of the open terminal and hit the globe icon next to the  
+`Zot Registry` row. This will open the deployed Zot Registry we are using for our OCI registry endpoint. Based on [this](https://oras.land/docs/quickstart/) example from Oras.  
+
+> [!NOTE]  
+> Using this example registry is only necessary to make these exercises standalone, if you have a personal oci registry available, that can be used too.  
+        For authentication to those registries, a `.netrc` file needs to be created and a flag `--netrc` should be added to the `push` command.
+
+``` bash
+bomctl push -f spdx urn:uuid:f360ad8b-dc41-4256-afed-337a04dff5db oci://${BOMCTL_PORT_URL}/hello-bomctl:latest
+```
+
+#### __Step 3: Verify (Optional)__
+
+Fetch the manifest from the local test registry
+
+```bash
+oras manifest fetch ${BOMCTL_PORT_URL}/hello-bomctl:latest | jq
+```
+
+Identify the appropriate blob digest from the manifest output from previous cmd:
+
+For SPDX, look for a layer with `"mediaType": "application/spdx+json"`  
+For CycloneDX, look for a layer with `"mediaType": "application/vnd.cyclonedx+json;version=<version#>"`. Note the `<version#>` at the end would have the CycloneDX version of the SBOM.
+
+Once you've identified the layer, copy the digest.  
+In the example below, the digest for the CycloneDX SBOM layer would be `"sha256:bd309293a0e79962aa08abf2e5e4e636d254accf9a455bdf17c6ca22bc3ae7a0"`
+
+```json
+{
+  "schemaVersion": 2,
+  "mediaType": "application/vnd.oci.image.manifest.v1+json",
+  "artifactType": "application/vnd.oci.image.manifest.v1+json",
+  "config": {
+    "mediaType": "application/vnd.oci.empty.v1+json",
+    "digest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "size": 2,
+    "data": "e30="
+  },
+  "layers": [
+    {
+      "mediaType": "application/vnd.cyclonedx+json;version=1.5",
+      "digest": "sha256:bd309293a0e79962aa08abf2e5e4e636d254accf9a455bdf17c6ca22bc3ae7a0",
+      "size": 2470,
+      "data": "super cool data"
+    }
+  ]
+}
+```
+
+Fetch the blob contents using the digest located in the previous step:
+
+```bash
+oras blob fetch --output - ${BOMCTL_PORT_URL}/hello-bomctl@sha256:<digest of SBOM layer in manifest>
+```
+
 ### Merge SBOMs
 
 The `merge` command will merge two or more documents that exist in local storage. This will leave the original SBOMs unaltered in  
@@ -198,4 +269,91 @@ format is CycloneDX so the `-f` isn't needed)
 
 ``` bash
 bomctl export <UUID> -o merged-sbom.cdx.json
+```
+
+### SBOM Alias
+
+Working with multiple SBOMs, it can be tricky to keep documents straight, as different formats have different expectations for naming. `bomctl`  
+typically relies on document IDs for storing documents; however, these can be taxing to use as an ID when performing operations. The `alias` command  
+gives the option to pick a more human readable name for a document for ease of use.
+
+To get more information about `alias` and its' subcommands, run:
+
+```bash
+bomctl alias --help
+```
+
+#### __Step 1: Set Alias__
+
+This step assumes the CycloneDX SBOM from [exercise](#step-1-fetch) was previously fetched.
+
+```bash
+bomctl alias set urn:uuid:f360ad8b-dc41-4256-afed-337a04dff5db 0_3_0
+```
+
+#### __Step 2: Remove Alias__
+
+This commmand removes the existing alias for the provided SBOM ID.
+
+```bash
+bomctl alias remove urn:uuid:f360ad8b-dc41-4256-afed-337a04dff5db
+```
+
+### SBOM Tags
+
+Working with multiple SBOMs, it can be hard to keep documents organized. There may be groups of SBOMs within your system that are related and should  
+be handled together, or at least linked in a way that makes it easy to know what goes with what. The `tag` command allows a user to specify a 'tag'  
+to associate with an SBOM to make searching for and organizing your SBOMs easier.
+
+To get more information about `tag` and its' subcommands, run:
+
+```bash
+bomctl tag --help
+```
+
+#### __Step 1: Add Tag__
+
+This step assumes the CycloneDX SBOM from [exercise](#step-1-fetch) was previously fetched.
+Feel free to use any previously fetched SBOM in the local database instead by updating the SBOM ID in the command.
+
+Since this SBOM originated from a bomctl container image, lets add those tags. Additional SBOM IDs can be specified separated by spaces.
+
+```bash
+bomctl tag add urn:uuid:f360ad8b-dc41-4256-afed-337a04dff5db bomctl container SBOM CDX Test
+```
+
+#### __Step 2: List Tag__
+
+Lets list them out to illustrate how you could check this for any SBOM in your database to get more info about it.
+
+```bash
+bomctl tag list urn:uuid:f360ad8b-dc41-4256-afed-337a04dff5db
+```
+
+#### __Step 3: Remove Tag__
+
+It's probably redundant to have this SBOM tagged with `bomctl` since thats all we've been handling, so lets remove it.
+
+```bash
+bomctl tag remove urn:uuid:f360ad8b-dc41-4256-afed-337a04dff5db bomctl
+```
+
+Then we can do a quick list to make sure it reflects the tags we expect.
+
+```bash
+bomctl tag list urn:uuid:f360ad8b-dc41-4256-afed-337a04dff5db
+```
+
+#### __Step 4: Clear Tags__
+
+This particular SBOM still has too many superfluous tags, so lets just clear them all.
+
+```bash
+bomctl tag clear urn:uuid:f360ad8b-dc41-4256-afed-337a04dff5db
+```
+
+Then we can do a quick list to make sure it reflects the tags we expect.
+
+```bash
+bomctl tag list urn:uuid:f360ad8b-dc41-4256-afed-337a04dff5db
 ```
