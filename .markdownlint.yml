@@ -1,0 +1,12 @@
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://github.com/DavidAnson/markdownlint/raw/main/schema/markdownlint-config-schema.json
+
+# MD013/line-length - Line length
+line-length: false
+
+# MD033/no-inline-html - Inline HTML
+no-inline-html: false
+
+# MD041/first-line-heading/first-line-h1 - First line in a file should be a top-level heading
+first-line-heading: false
