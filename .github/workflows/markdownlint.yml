@@ -18,7 +18,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Run markdownlint
         uses: DavidAnson/markdownlint-cli2-action@a23dae216ce3fee4db69da41fed90d2a4af801cf # v19.0.0
