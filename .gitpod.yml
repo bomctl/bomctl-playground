@@ -16,16 +16,16 @@ tasks:
       docker run -d -p 5000:5000 --name oras-quickstart ghcr.io/project-zot/zot-linux-amd64:latest
   - name: Display Help
     command: |
+      gp ports await 5000 
+
+      url="$(gp url 5000)"
+      export BOMCTL_PORT_URL="${url#*://}"
+
       cd bomctl 
       make build-linux-amd
       cp bomctl-linux-amd64 /workspace
       cd /workspace
       source <(./bomctl-linux-amd64 completion bash)
-
-      gp ports await 5000 
-
-      url="$(gp url 5000)"
-      export BOMCTL_PORT_URL="${url#*://}"
 
       gp open README.md
 
