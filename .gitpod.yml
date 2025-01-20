@@ -22,8 +22,8 @@ tasks:
       git clone https://github.com/bomctl/bomctl
       cd bomctl 
       make build-linux-amd
-      cp dist/bomctl-linux-amd64 /workspace
-      cd /workspace
+      cp dist/bomctl-linux-amd64 /workspace/bomctl-playground
+      cd /workspace/bomctl-playground
       source <(./bomctl-linux-amd64 completion bash)
 
       gp open README.md
