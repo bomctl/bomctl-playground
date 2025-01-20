@@ -17,10 +17,10 @@ tasks:
   - name: Display Help
     command: |
       cd bomctl 
-      task build:linux:amd
-      cp dist/linux-amd64/bomctl .
-      cd ..
-      source <(./bomctl completion bash)
+      make build-linux-amd
+      cp bomctl-linux-amd64 /workspace
+      cd /workspace
+      source <(./bomctl-linux-amd64 completion bash)
 
       gp ports await 5000 
 
@@ -29,4 +29,4 @@ tasks:
 
       gp open README.md
 
-      ./bomctl -h
+      ./bomctl-linux-amd64 -h
