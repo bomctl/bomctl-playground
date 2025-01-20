@@ -1,3 +1,5 @@
+additionalRepositories:
+    - url: https://github.com/bomctl/bomctl
 ports:
   - name: Zot registry
     description: Test OCI registry
@@ -12,16 +14,13 @@ tasks:
     command: |
       brew install oras
       docker run -d -p 5000:5000 --name oras-quickstart ghcr.io/project-zot/zot-linux-amd64:latest
-      gp ports await 5000
-
-      url="$(gp url 5000)"
-      export BOMCTL_PORT_URL="${url#*://}"
-
-      oras push ${BOMCTL_PORT_URL}/hello-bomctl:v0.0.0 examples/bomctl_0.1.1_darwin_arm64.tar.gz.cdx.json
   - name: Display Help
     command: |
-      brew tap bomctl/bomctl && brew install bomctl
-      source <(bomctl completion bash)
+      cd bomctl 
+      task build:linux:amd
+      cp dist/linux-amd64/bomctl .
+      cd ..
+      source <(./bomctl completion bash)
 
       gp ports await 5000 
 
@@ -30,4 +29,4 @@ tasks:
 
       gp open README.md
 
-      bomctl -h
+      ./bomctl -h
