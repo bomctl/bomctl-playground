@@ -1,11 +1,33 @@
+ports:
+  - name: Zot registry
+    description: Test OCI registry
+    port: 5000
+    visibility: public
 tasks:
   - name: Install Tools
     command: |
       brew tap anchore/grype
-      brew install grype trivy
+      brew install grype trivy bash-completion@2
+  - name: Launch Zot
+    command: |
+      brew install oras
+      docker run -d -p 5000:5000 --name oras-quickstart ghcr.io/project-zot/zot-linux-amd64:latest
+      gp ports await 5000
+
+      url="$(gp url 5000)"
+      export BOMCTL_PORT_URL="${url#*://}"
+
+      oras push ${BOMCTL_PORT_URL}/hello-bomctl:v0.0.0 examples/bomctl_0.1.1_darwin_arm64.tar.gz.cdx.json
   - name: Display Help
     command: |
-      gp open README.md
       brew tap bomctl/bomctl && brew install bomctl
+      source <(bomctl completion bash)
 
-      bomctl
+      gp ports await 5000 
+
+      url="$(gp url 5000)"
+      export BOMCTL_PORT_URL="${url#*://}"
+
+      gp open README.md
+
+      bomctl -h
